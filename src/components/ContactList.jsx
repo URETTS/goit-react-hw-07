@@ -1,19 +1,28 @@
 import { useSelector } from "react-redux";
 import Contact from "./Contact";
+import {
+  selectFilteredContacts,
+  selectLoading,
+  selectError
+} from "../redux/contactsSlice";
 
 const ContactList = () => {
-  const contacts = useSelector((state) => state.contacts.items); 
-  const filter = useSelector((state) => state.filters.name.toLowerCase()); 
+  const contacts = useSelector(selectFilteredContacts);
+  const loading = useSelector(selectLoading);
+  const error = useSelector(selectError);
 
-  const filteredContacts = contacts.filter((contact) =>
-    contact.name.toLowerCase().includes(filter)
-  ); 
+  if (loading) return <p>Loading contacts...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <ul>
-      {filteredContacts.map(({ id, name, number }) => (
-        <Contact key={id} id={id} name={name} number={number} />
-      ))}
+      {contacts.length > 0 ? (
+        contacts.map(({ id, name, number }) => (
+          <Contact key={id} id={id} name={name} number={number} />
+        ))
+      ) : (
+        <p>No contacts found.</p>
+      )}
     </ul>
   );
 };
